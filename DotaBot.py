@@ -13,9 +13,14 @@ class Dota:
 
     #function to populate the dictionaries
     def create_attr_dicts(self, api):
+
+        #response object to make request to api
         response = requests.get(f"{api}")
+
+        #if response is 200 (good)
         if response.status_code == 200:
-            #print("successfully fetched the data")
+            
+            #create data object that corresponds json information
             data = response.json()
             for hero in data:
 
@@ -37,6 +42,7 @@ class Dota:
         else:
             print(f"Hello person, there's a {response.status_code} error with your request")
     
+    #print function to print the dictionaries of heroes 
     def printDicts(self):
         
         print("*****AGI HEROES*****")
@@ -54,6 +60,8 @@ class Dota:
         print("*****UNIVERSAL HEROES*****")
         pprint.pprint(list(self.uniHero.values()))
         print('\n')
+
+    #def getWinsLosses():
 
 
     def __init__(self, api):
