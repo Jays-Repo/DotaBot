@@ -9,7 +9,6 @@ class Dota:
     strHero = dict()
     intHero = dict()
     uniHero = dict()
-    count = 0
 
     #function to populate the dictionaries
     def create_attr_dicts(self, api):
@@ -25,20 +24,17 @@ class Dota:
             for hero in data:
 
                 if hero['primary_attr'] == 'agi':
-                    self.agiHero[self.count] = [[hero['id']], [[hero['localized_name']], [hero['primary_attr']]]]
-                    self.count = self.count+1
+                    self.agiHero[hero['id']] = {"name":hero['localized_name'], "attribute":hero['primary_attr']} 
             
                 elif hero['primary_attr'] == 'str':
-                    self.strHero[self.count] = [[hero['id']], [[hero['localized_name']], [hero['primary_attr']]]]
-                    self.count = self.count+1
+                    self.strHero[hero['id']] = {"name":hero['localized_name'], "attribute":hero['primary_attr']} 
 
                 elif hero['primary_attr'] == 'int':
-                    self.intHero[self.count] = [[hero['id']], [[hero['localized_name']], [hero['primary_attr']]]]
-                    self.count = self.count+1
+                    self.intHero[hero['id']] = {"name":hero['localized_name'], "attribute":hero['primary_attr']} 
 
                 elif hero['primary_attr'] == 'all':
-                    self.uniHero[self.count] = [[hero['id']], [[hero['localized_name']], [hero['primary_attr']]]]
-                    self.count = self.count+1
+                    self.uniHero[hero['id']] = {"name":hero['localized_name'], "attribute":hero['primary_attr']} 
+
         else:
             print(f"Hello person, there's a {response.status_code} error with your request")
     
@@ -46,22 +42,33 @@ class Dota:
     def printDicts(self):
         
         print("*****AGI HEROES*****")
-        pprint.pprint(list(self.agiHero.values()))
+        pprint.pprint(list(self.agiHero.items()))
         print('\n')
 
         print("*****STR HEROES*****")
-        pprint.pprint(list(self.strHero.values()))
+        pprint.pprint(list(self.strHero.items()))
         print('\n')
 
         print("*****INT HEROES*****")
-        pprint.pprint(list(self.intHero.values()))
+        pprint.pprint(list(self.intHero.items()))
         print('\n')
 
         print("*****UNIVERSAL HEROES*****")
-        pprint.pprint(list(self.uniHero.values()))
+        pprint.pprint(list(self.uniHero.items()))
         print('\n')
 
-    #def getWinsLosses():
+        print(self.agiHero[1].get('name'))
+
+    def getWinsLossesAgi(self, api):
+        response = requests.get(f"{api}")
+
+        if response.status_code == 200:
+            data = response.json()
+            for hero in data:
+
+                if hero['hero_id'] in self.agiHero.keys():
+                    print("Hero name: %s \nGames Played: %s \nWins: %s\n" % (self.agiHero[int(hero['hero_id'])].get('name'), hero['games'], hero['win']))
+
 
 
     def __init__(self, api):
@@ -71,4 +78,5 @@ class Dota:
         
 
 api_call = Dota("https://api.opendota.com/api/heroes")
-api_call.printDicts()
+api_call.getWinsLossesAgi("https://api.opendota.com/api/players/66957927/heroes")
+
