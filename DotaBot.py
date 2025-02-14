@@ -89,11 +89,15 @@ class Dota:
     def getWinsLosses(self, heroName):
         #use the hero name to get the ID
         hero_dicts = [self.agiHero, self.strHero, self.intHero, self.uniHero]
+        id = None
         for hero_dict in hero_dicts:
             for hero_id, name in hero_dict.items():
                 if name == heroName:
                     id = hero_id
                     break
+        if id == None:
+            print("Hero not found")
+            return
         #have the id, make api call now on that id
         print(f"ID for {heroName} is {id}\n")
         matchup_url = f"https://api.opendota.com/api/players/66957927/heroes"
@@ -111,12 +115,9 @@ class Dota:
                     print(f"Hero: {heroName}\nWins: {wins}\nTotal Games Played: {games}\nWinrate: {winrate: .2f}")
         
 
-
     def __init__(self, api):
         self.create_attr_dicts(api)
         #self.printDicts()
-
-        
 
 api_call = Dota("https://api.opendota.com/api/heroes")
 #api_call.getWinsLossesAgi("https://api.opendota.com/api/players/66957927/heroes")
