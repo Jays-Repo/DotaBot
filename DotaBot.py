@@ -5,10 +5,10 @@ import pprint
 class Dota:
 
     #Create the empty dictionaries for the separate attributes
-    agiHero = dict()
-    strHero = dict()
-    intHero = dict()
-    uniHero = dict()
+    agiHero = {}
+    strHero = {}
+    intHero = {}
+    uniHero = {}
 
     #function to populate the dictionaries
     def create_attr_dicts(self, api):
@@ -23,18 +23,19 @@ class Dota:
             data = response.json()
             for hero in data:
 
-                if hero['primary_attr'] == 'agi':
-                    self.agiHero[hero['id']] = {"name":hero['localized_name'], "attribute":hero['primary_attr']} 
-            
-                elif hero['primary_attr'] == 'str':
-                    self.strHero[hero['id']] = {"name":hero['localized_name'], "attribute":hero['primary_attr']} 
+                hero_name = hero.get('localized_name')
+                hero_id = hero.get('id')
+                primary_attr = hero.get('primary_attr')
 
-                elif hero['primary_attr'] == 'int':
-                    self.intHero[hero['id']] = {"name":hero['localized_name'], "attribute":hero['primary_attr']} 
-
-                elif hero['primary_attr'] == 'all':
-                    self.uniHero[hero['id']] = {"name":hero['localized_name'], "attribute":hero['primary_attr']} 
-
+                if hero_name and hero_id is not None:
+                    if primary_attr == 'agi':
+                        self.agiHero[hero_id] = hero_name
+                    if primary_attr == 'str':
+                        self.strHero[hero_id] = hero_name
+                    if primary_attr == 'int':
+                        self.intHero[hero_id] = hero_name
+                    if primary_attr == 'all':
+                        self.uniHero[hero_id] = hero_name
         else:
             print(f"Hello person, there's a {response.status_code} error with your request")
     
@@ -42,38 +43,48 @@ class Dota:
     def printDicts(self):
         
         print("*****AGI HEROES*****")
-        pprint.pprint(list(self.agiHero.items()))
+        print(self.agiHero)
         print('\n')
 
         print("*****STR HEROES*****")
-        pprint.pprint(list(self.strHero.items()))
+        print(self.strHero)
         print('\n')
 
         print("*****INT HEROES*****")
-        pprint.pprint(list(self.intHero.items()))
+        print(self.intHero)
         print('\n')
 
         print("*****UNIVERSAL HEROES*****")
-        pprint.pprint(list(self.uniHero.items()))
+        print(self.uniHero)
         print('\n')
 
-        print(self.agiHero[1].get('name'))
-
+    #function to get the win loss ratio on every agi hero 
+    #this is a test, to get practice working with the JSON file and extracting information correctly
     def getWinsLossesAgi(self, api):
+        
         response = requests.get(f"{api}")
 
         if response.status_code == 200:
             data = response.json()
             for hero in data:
 
-                if hero['hero_id'] in self.agiHero.keys():
-                    print("Hero name: %s \nGames Played: %s \nWins: %s\n" % (self.agiHero[int(hero['hero_id'])].get('name'), hero['games'], hero['win']))
+                hero_id = hero.get('hero_id')
+                wins = hero.get('win')
+                games = hero.get('games')
+                if games != 0:
+                    winrate = wins/games
+                else:
+                    winrate = 0
+
+                if hero_id in self.agiHero:
+                    print("Hero name: %s \nGames Played: %d \nWins: %d" % (self.agiHero[hero_id], wins, games))
+                    print("Win rate: %.2f\n" % winrate)
 
 
 
     def __init__(self, api):
         self.create_attr_dicts(api)
-        # self.printDicts()
+        #self.printDicts()
 
         
 
