@@ -81,6 +81,36 @@ class Dota:
                     print("Win rate: %.2f\n" % winrate)
 
 
+    #next step is to create a function that will get individual win loss information
+    #we will use the dictionary we already made and we can use heroID and heroName
+    #the user should provide a heroName, and we can then look through the dictionary keys (I guess we need to look through all 4?)
+    #once we find it, we can provide relevant information
+    #We can use the same API key from the getWinsLosses function
+    def getWinsLosses(self, heroName):
+        #use the hero name to get the ID
+        hero_dicts = [self.agiHero, self.strHero, self.intHero, self.uniHero]
+        for hero_dict in hero_dicts:
+            for hero_id, name in hero_dict.items():
+                if name == heroName:
+                    id = hero_id
+                    break
+        #have the id, make api call now on that id
+        print(f"ID for {heroName} is {id}\n")
+        matchup_url = f"https://api.opendota.com/api/players/66957927/heroes"
+        response = requests.get(matchup_url)
+
+        if response.status_code == 200:
+            data = response.json()
+            for matchups in data:
+                heroID = matchups.get('hero_id')
+                if id == heroID:
+                    wins = matchups.get('win')
+                    games = matchups.get('games')
+                    winrate = wins / games
+
+                    print(f"Hero: {heroName}\nWins: {wins}\nTotal Games Played: {games}\nWinrate: {winrate: .2f}")
+        
+
 
     def __init__(self, api):
         self.create_attr_dicts(api)
@@ -89,5 +119,6 @@ class Dota:
         
 
 api_call = Dota("https://api.opendota.com/api/heroes")
-api_call.getWinsLossesAgi("https://api.opendota.com/api/players/66957927/heroes")
-
+#api_call.getWinsLossesAgi("https://api.opendota.com/api/players/66957927/heroes")
+hero = input("Enter hero: ")
+api_call.getWinsLosses(hero)
