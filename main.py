@@ -1,10 +1,11 @@
 from typing import Final
+import requests
 import os
 from dotenv import load_dotenv
 import discord
-from discord import Intents, Client, Message, Interaction
+from discord import Intents, Client, Message, Interaction, app_commands
 from discord.ext import commands
-from responses import get_heroes_message, get_response
+from responses import get_heroes_message, get_response, get_winloss
 from DotaBot import Dota
 
 # STEP 0: LOAD OUR TOKEN FROM SOMEWHERE SAFE
@@ -17,7 +18,7 @@ API_URL = "https://api.opendota.com/api/heroes"
 intents: Intents = Intents.default()
 intents.message_content = True # NOQA
 #client: Client = Client(intents=intents)
-client = commands.Bot(command_prefix='/', intents=intents)
+client = commands.Bot(command_prefix='!', intents=intents)
 
 dota_bot = Dota(API_URL)
 
@@ -64,6 +65,12 @@ async def on_message(message: Message) -> None:
 async def get_all_heroes(interaction: discord.Interaction):
     heroes_message = get_heroes_message(dota_bot)
     await interaction.response.send_message(heroes_message)
+
+@client.tree.command(name="getwinrate", description="Get a winrate for a given hero.")
+@app_commands.describe(hero="Enter the hero name(e.g., Axe)")
+async def get_win_rate(interaction: discord.Interaction, hero: str):
+    win_loss = get_winloss(dota_bot, hero)
+    await interaction.response.send_message(win_loss)
 
 @client.tree.command(name="sync", description="Sync")
 async def sync(interaction: discord.Interaction):

@@ -133,6 +133,30 @@ class Dota:
 
                     print(f"Hero: {heroName}\nWins: {wins}\nTotal Games Played: {games}\nWinrate: {winrate: .2f}")
         
+    def get_winloss_data(self, hero: str)->str:
+        hero_dicts = [self.agiHero, self.strHero, self.intHero, self.uniHero]
+        id = None
+        for hero_dict in hero_dicts:
+            for hero_id, name in hero_dict.items():
+                if name == hero:
+                    id = hero_id
+                    break
+        if id == None:
+            return 'Hero not found'            
+        matchup_url = f"https://api.opendota.com/api/players/66957927/heroes"
+        response = requests.get(matchup_url)      
+
+        if response.status_code == 200:
+            data = response.json()
+            for matchups in data:
+                heroID = matchups.get('hero_id')
+                if id == heroID:
+                    wins = matchups.get('win')
+                    games = matchups.get('games')
+                    winrate = wins / games
+
+                    return f"Hero: {hero}\nWins: {wins}\nTotal Games Played: {games}\nWinrate: {winrate: .2f}"
+
 
     def __init__(self, api):
         self.create_attr_dicts(api)

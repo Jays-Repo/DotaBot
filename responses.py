@@ -20,3 +20,9 @@ def get_heroes_message(dota_bot):
     hero_data = dota_bot.get_heroes_data()
 
     return f"{hero_data}"
+
+def get_winloss(dota_bot, hero: str):
+
+    winloss_data = dota_bot.get_winloss_data(hero)
+
+    return winloss_data
