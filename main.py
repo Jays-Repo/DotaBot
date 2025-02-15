@@ -1,17 +1,25 @@
 from typing import Final
 import os
 from dotenv import load_dotenv
-from discord import Intents, Client, Message
-from responses import get_response
+import discord
+from discord import Intents, Client, Message, Interaction
+from discord.ext import commands
+from responses import get_heroes_message, get_response
+from DotaBot import Dota
 
 # STEP 0: LOAD OUR TOKEN FROM SOMEWHERE SAFE
 load_dotenv()
 TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
+API_URL = "https://api.opendota.com/api/heroes"
+
 
 #STEP 1: BOT SETUP
 intents: Intents = Intents.default()
 intents.message_content = True # NOQA
-client: Client = Client(intents=intents)
+#client: Client = Client(intents=intents)
+client = commands.Bot(command_prefix='/', intents=intents)
+
+dota_bot = Dota(API_URL)
 
 # Step 2: MESSAGE FUNCTIONALITY
 async def send_message(message: Message, user_message: str) -> None:
@@ -32,7 +40,11 @@ async def send_message(message: Message, user_message: str) -> None:
 #Step 3: HANDLING STARTUP FOR OUR BOT
 @client.event
 async def on_ready() -> None:
+    await client.tree.sync()
     print(f'{client.user} is now running!')
+
+    # Debug: Print registered commands
+    print("Registered Commands:", [cmd.name for cmd in client.tree.get_commands()])
     
 # Step 4: HANDLING INCOMING MESSAGES
 @client.event
@@ -45,6 +57,18 @@ async def on_message(message: Message) -> None:
 
     print(f'[{channel}] {username}: "{user_message}"')
     await send_message(message, user_message)
+
+    await client.process_commands(message)
+
+@client.tree.command(name="getallheroes", description="Get a list of all Dota heroes categorized by attributes.")
+async def get_all_heroes(interaction: discord.Interaction):
+    heroes_message = get_heroes_message(dota_bot)
+    await interaction.response.send_message(heroes_message)
+
+@client.tree.command(name="sync", description="Sync")
+async def sync(interaction: discord.Interaction):
+    await client.tree.sync()
+    await interaction.response.send_message("Slash commands synced!")
 
 # STEP 5: MAIN ENTRY POINT
 def main() -> None:

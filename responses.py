@@ -1,4 +1,5 @@
 from random import choice, randint
+from DotaBot import Dota
 
 def get_response(user_input: str) -> str:
     lowered: str = user_input.lower()
@@ -13,3 +14,9 @@ def get_response(user_input: str) -> str:
         return choice(['Hi Cora',
                        'What are you doin',
                        'Did this work'])
+    
+def get_heroes_message(dota_bot):
+
+    hero_data = dota_bot.get_heroes_data()
+
+    return f"{hero_data}"

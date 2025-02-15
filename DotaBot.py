@@ -60,6 +60,25 @@ class Dota:
 
     #function to get the win loss ratio on every agi hero 
     #this is a test, to get practice working with the JSON file and extracting information correctly
+
+    def get_heroes_data(self):
+        heroes_data = "```"
+
+        heroes_data += "AGI HEROES\n"
+        heroes_data += "\n".join([f"{key}: {value}" for key, value in self.agiHero.items()])
+
+        heroes_data += "\n\nSTR HEROES\n"
+        heroes_data += "\n".join([f"{key}: {value}" for key, value in self.strHero.items()])
+
+        heroes_data += "\n\nINT HEROES\n"
+        heroes_data += "\n".join([f"{key}: {value}" for key, value in self.intHero.items()])
+
+        heroes_data += "\n\nUNIVERSAL HEROES\n"
+        heroes_data += "\n".join([f"{key}: {value}" for key, value in self.uniHero.items()])
+
+        heroes_data += "```"
+        return heroes_data
+    
     def getWinsLossesAgi(self, api):
         
         response = requests.get(f"{api}")
@@ -119,7 +138,7 @@ class Dota:
         self.create_attr_dicts(api)
         #self.printDicts()
 
-api_call = Dota("https://api.opendota.com/api/heroes")
+#api_call = Dota("https://api.opendota.com/api/heroes")
 #api_call.getWinsLossesAgi("https://api.opendota.com/api/players/66957927/heroes")
-hero = input("Enter hero: ")
-api_call.getWinsLosses(hero)
+#hero = input("Enter hero: ")
+#api_call.getWinsLosses(hero)
